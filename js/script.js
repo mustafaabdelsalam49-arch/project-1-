@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     mobileDrawer?.classList.add('open');
     drawerBackdrop?.classList.add('active');
     hamburgerBtn?.setAttribute('aria-expanded', 'true');
+    document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
   }
 
@@ -20,14 +21,30 @@ document.addEventListener('DOMContentLoaded', () => {
     mobileDrawer?.classList.remove('open');
     drawerBackdrop?.classList.remove('active');
     hamburgerBtn?.setAttribute('aria-expanded', 'false');
+    document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
   }
 
-  hamburgerBtn?.addEventListener('click', openDrawer);
-  closeDrawerBtn?.addEventListener('click', closeDrawer);
+  hamburgerBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openDrawer();
+  });
+
+  closeDrawerBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeDrawer();
+  });
+
   drawerBackdrop?.addEventListener('click', closeDrawer);
 
-  // Mobile Accordion for Services
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileDrawer?.classList.contains('open')) {
+      closeDrawer();
+    }
+  });
+
+  // Mobile Accordion for Services in Drawer
   const drawerServicesToggle = document.getElementById('drawerServicesToggle');
   const drawerServicesPanel = document.getElementById('drawerServicesPanel');
 
