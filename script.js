@@ -127,7 +127,7 @@
     }
 
     // 3. Robust link navigation handling inside mobile drawer
-    document.querySelectorAll('.drawer-link, .drawer-sublink').forEach((link) => {
+    document.querySelectorAll('.mobile-drawer a').forEach((link) => {
       link.addEventListener('click', (e) => {
         const href = link.getAttribute('href');
         if (!href) return;
@@ -139,6 +139,7 @@
           href.startsWith('http') ||
           link.getAttribute('target') === '_blank'
         ) {
+          closeDrawer();
           return;
         }
 
@@ -167,7 +168,8 @@
           return;
         }
 
-        // Standard multi-page navigation allowed naturally
+        // Standard multi-page navigation: close drawer and let browser navigate
+        closeDrawer();
       });
     });
 
