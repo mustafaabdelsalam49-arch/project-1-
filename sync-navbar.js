@@ -95,6 +95,10 @@ htmlFiles.forEach(file => {
       '<div class="nav-item has-coldair-dropdown" id="coldairNavWrapper">',
       '<div class="nav-item has-coldair-dropdown active" id="coldairNavWrapper">'
     );
+    customizedNavbar = customizedNavbar.replace(
+      'href="https://wa.me/201271524415" target="_blank" rel="noopener" class="sticky-bar-wa-btn"',
+      'href="https://wa.me/201278844434" target="_blank" rel="noopener" class="sticky-bar-wa-btn"'
+    );
   } else if (file.startsWith('service-') || file === 'services.html' || file.startsWith('brand-')) {
     customizedNavbar = customizedNavbar.replace(
       '<div class="nav-item has-mega" id="megaMenuWrapper">',
