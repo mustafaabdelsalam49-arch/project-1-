@@ -160,6 +160,28 @@
       switchDesktopMode(tabBrandTrigger, panelByBrand);
     });
 
+    // 4b. Standalone Coldair Dropdown Controller (Desktop & Touch)
+    const coldairNavWrapper = document.getElementById('coldairNavWrapper');
+    const coldairTriggerBtn = document.getElementById('coldairTriggerBtn');
+    const coldairDropdownPanel = document.getElementById('coldairDropdownPanel');
+
+    if (coldairNavWrapper && coldairDropdownPanel && coldairTriggerBtn) {
+      coldairTriggerBtn.addEventListener('click', (e) => {
+        if (window.innerWidth >= 992) {
+          e.preventDefault();
+          const isOpened = coldairDropdownPanel.classList.toggle('open');
+          coldairTriggerBtn.setAttribute('aria-expanded', String(isOpened));
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!coldairNavWrapper.contains(e.target)) {
+          coldairDropdownPanel.classList.remove('open');
+          coldairTriggerBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
     // Master-Detail Category Switcher (Hover & Click)
     const applianceNavButtons = document.querySelectorAll('.appliance-nav-btn');
     const subpanels = document.querySelectorAll('.mega-subpanel');

@@ -824,6 +824,428 @@ h1, h2, h3, h4, h5, h6, p, a, span, li {
 }
 
 /* ==========================================================================
+   STANDALONE COLDAIR NAVBAR ITEM & IMAGE SHOWCASE DROPDOWN
+   ========================================================================== */
+
+/* Navbar Trigger & Pill */
+.nav-item.has-coldair-dropdown {
+  position: static; /* Anchors dropdown cleanly to .nav-wrap container without screen overflow */
+  padding: 0;
+  background: transparent !important;
+}
+
+.coldair-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(2, 132, 199, 0.08);
+  border: 1.5px solid rgba(2, 132, 199, 0.35);
+  border-radius: 999px;
+  padding: 4px 6px 4px 14px;
+  gap: 10px;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.nav-item.has-coldair-dropdown:hover .coldair-nav-pill,
+.coldair-nav-pill:focus-within {
+  background: rgba(2, 132, 199, 0.15);
+  border-color: #0284c7;
+  box-shadow: 0 3px 12px rgba(2, 132, 199, 0.2);
+}
+
+.coldair-pill-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #0284c7 !important;
+  font-weight: 800;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.coldair-pill-icon {
+  font-size: 15px;
+}
+
+.coldair-caret {
+  font-size: 10px;
+  color: #0284c7;
+  transition: transform 0.25s ease;
+}
+
+.nav-item.has-coldair-dropdown:hover .coldair-caret {
+  transform: rotate(180deg);
+}
+
+.coldair-pill-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.coldair-quick-call {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #0284c7;
+  color: #ffffff !important;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+  transition: all 0.2s ease;
+}
+
+.coldair-quick-call:hover {
+  background: #0369a1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.4);
+}
+
+.coldair-quick-wa {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: #22c55e;
+  color: #ffffff !important;
+  border-radius: 50%;
+  font-size: 12px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
+  transition: all 0.2s ease;
+}
+
+.coldair-quick-wa:hover {
+  background: #16a34a;
+  transform: scale(1.15);
+}
+
+/* Coldair Showcase Dropdown Panel */
+.coldair-dropdown-panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  margin: 12px auto 0;
+  width: 100%;
+  max-width: 980px;
+  background: #ffffff;
+  border-radius: var(--radius-md, 12px);
+  box-shadow: 0 22px 50px rgba(2, 132, 199, 0.16), 0 6px 18px rgba(0, 0, 0, 0.08);
+  border: 1.5px solid rgba(2, 132, 199, 0.25);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.nav-item.has-coldair-dropdown:hover .coldair-dropdown-panel,
+.nav-item.has-coldair-dropdown:focus-within .coldair-dropdown-panel,
+.coldair-dropdown-panel.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Header inside Dropdown */
+.coldair-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #041426 0%, #08284d 100%);
+  color: #ffffff;
+  border-bottom: 2px solid #0284c7;
+}
+
+.coldair-badge-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(2, 132, 199, 0.25);
+  border: 1px solid #0284c7;
+  color: #7dd3fc;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+  margin-bottom: 4px;
+}
+
+.coldair-badge-inline .badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #38bdf8;
+}
+
+.coldair-header-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 4px;
+}
+
+.coldair-header-sub {
+  font-size: 12.5px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.coldair-header-cta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.btn-coldair-primary {
+  background: #0284c7;
+  color: #ffffff !important;
+  border: 1px solid #0284c7;
+  font-weight: 800;
+  padding: 7px 14px;
+  font-size: 12.5px;
+  border-radius: var(--radius-sm, 8px);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-coldair-primary:hover {
+  background: #0369a1;
+}
+
+.btn-coldair-whatsapp {
+  background: #22c55e;
+  color: #ffffff !important;
+  border: 1px solid #22c55e;
+  font-weight: 800;
+  padding: 7px 14px;
+  font-size: 12.5px;
+  border-radius: var(--radius-sm, 8px);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-coldair-whatsapp:hover {
+  background: #16a34a;
+}
+
+/* 4 Showcase Appliance Cards with High-Quality Images */
+.coldair-showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 20px 24px;
+  background: #f8fafc;
+}
+
+.coldair-showcase-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.coldair-showcase-card:hover {
+  transform: translateY(-4px);
+  border-color: #0284c7;
+  box-shadow: 0 10px 25px rgba(2, 132, 199, 0.14);
+}
+
+.coldair-showcase-card.highlight {
+  border-color: rgba(2, 132, 199, 0.4);
+  background: #f0f9ff;
+}
+
+.showcase-img-box {
+  position: relative;
+  width: 100%;
+  height: 125px;
+  overflow: hidden;
+  background: #e2e8f0;
+}
+
+.showcase-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.coldair-showcase-card:hover .showcase-thumb {
+  transform: scale(1.08);
+}
+
+.showcase-pill {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(4, 20, 38, 0.88);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.showcase-pill.highlight-pill {
+  background: #0284c7;
+}
+
+.showcase-card-content {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.showcase-card-heading {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 6px;
+}
+
+.showcase-card-text {
+  font-size: 11.5px;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0 0 10px;
+  flex-grow: 1;
+}
+
+.showcase-card-link {
+  font-size: 12px;
+  font-weight: 800;
+  color: #0284c7;
+  margin-top: auto;
+}
+
+.showcase-card-link.text-highlight {
+  color: #0369a1;
+}
+
+/* Footer Inside Dropdown */
+.coldair-panel-footer {
+  padding: 12px 24px;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+}
+
+.footer-callout {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.footer-full-link {
+  color: #0284c7;
+  font-weight: 800;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-full-link:hover {
+  color: #0369a1;
+  text-decoration: underline;
+}
+
+/* Mobile Featured Coldair Card in Drawer */
+.mob-coldair-card {
+  margin: 10px 0 14px;
+  padding: 12px 14px;
+  background: #f0f9ff;
+  border: 1.5px solid #7dd3fc;
+  border-radius: 12px;
+}
+
+.mob-coldair-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.mob-coldair-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mob-coldair-badge strong {
+  font-size: 13.5px;
+  color: #0369a1;
+  font-weight: 900;
+}
+
+.mob-coldair-tag {
+  background: #0284c7;
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.mob-coldair-desc {
+  font-size: 11.5px;
+  color: #475569;
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+
+.mob-coldair-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.btn-coldair-call-mob {
+  background: #0284c7;
+  color: #ffffff !important;
+  font-weight: 800;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn-coldair-wa-mob {
+  background: #22c55e;
+  color: #ffffff !important;
+  font-weight: 800;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* ==========================================================================
    4. MOBILE DRAWER DUAL-PATH STYLES
    ========================================================================== */
 .mobile-dual-nav-card {
@@ -2151,6 +2573,14 @@ textarea.form-control {
     font-size: 12.5px;
     gap: 6px;
     padding: 5px 6px;
+  }
+  .coldair-showcase-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 16px;
+  }
+  .coldair-dropdown-panel {
+    max-width: 760px;
   }
 }
 
