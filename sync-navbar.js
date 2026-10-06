@@ -99,7 +99,7 @@ htmlFiles.forEach(file => {
       'href="https://wa.me/201271524415" target="_blank" rel="noopener" class="sticky-bar-wa-btn"',
       'href="https://wa.me/201278844434" target="_blank" rel="noopener" class="sticky-bar-wa-btn"'
     );
-  } else if (file.startsWith('service-') || file === 'services.html' || file.startsWith('brand-')) {
+  } else if (file.startsWith('service-') || file === 'services.html' || file.startsWith('brand-') || file === 'heaters.html') {
     customizedNavbar = customizedNavbar.replace(
       '<div class="nav-item has-mega" id="megaMenuWrapper">',
       '<div class="nav-item has-mega active" id="megaMenuWrapper">'
