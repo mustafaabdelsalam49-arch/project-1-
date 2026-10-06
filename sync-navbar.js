@@ -102,13 +102,23 @@ htmlFiles.forEach(file => {
     );
   }
 
-  // 3. Replace the header section
-  const beforeHeader = content.substring(0, headerStartIndex);
-  const afterHeader = content.substring(fullHeaderEnd);
-  content = beforeHeader + customizedNavbar + afterHeader;
+  // 3. Replace the header section cleanly without accumulating duplicate comments
+  const asideEndTag = '</aside>';
+  const asideEndIndex = content.indexOf(asideEndTag);
+  if (asideEndIndex !== -1 && asideEndIndex < headerStartIndex) {
+    const beforeAside = content.substring(0, asideEndIndex + asideEndTag.length);
+    const afterHeader = content.substring(fullHeaderEnd);
+    content = beforeAside + '\n\n  <!-- Main Site Header -->\n  ' + customizedNavbar + afterHeader;
+  } else {
+    const beforeHeader = content.substring(0, headerStartIndex);
+    const afterHeader = content.substring(fullHeaderEnd);
+    content = beforeHeader + customizedNavbar + afterHeader;
+  }
 
-  // 4. Update Global Branding: "مدير الصيانة" -> "مدير التوكيل" across titles, meta tags, and footers
-  content = content.replace(/مدير الصيانة/g, 'مدير التوكيل');
+  // 4. Update Global Branding: "مدير التوكيل" -> "مدير الصيانة" across titles, meta tags, and footers
+  content = content.replace(/مدير التوكيل/g, 'مدير الصيانة');
+  content = content.replace(/<b>\s*مدير\s*<\/b>\s*<small>\s*التوكيل\s*<\/small>/g, '<b>مدير</b> <small>الصيانة</small>');
+  content = content.replace(/<b>\s*مدير\s*<\/b>\s*التوكيل/g, '<b>مدير</b> الصيانة');
 
   // Also ensure phone placeholder in brand-fresh.html
   content = content.replace('01012345678', '01271524415');
