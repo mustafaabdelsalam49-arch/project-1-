@@ -2791,3 +2791,32 @@ textarea.form-control {
     max-width: 300px;
   }
 }
+
+/* ==========================================================================
+   COLDAIR WATER COOLER SHOWCASE & GALLERY SECTION
+   ========================================================================== */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.gallery-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.gallery-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 30px -5px rgba(2, 132, 199, 0.15) !important;
+}
+
+.gallery-card:hover img {
+  transform: scale(1.05);
+}
+
+@media (max-width: 991px) {
+  .gallery-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+  }
+}
