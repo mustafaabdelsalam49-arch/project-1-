@@ -1709,6 +1709,15 @@ h1, h2, h3, h4, h5, h6, p, a, span, li {
   flex-shrink: 0;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  position: relative;
+  z-index: 1001;
+}
+
+.hamburger-btn span,
+.hamburger-btn * {
+  pointer-events: none !important;
 }
 
 .hamburger-btn span {
@@ -1722,6 +1731,11 @@ h1, h2, h3, h4, h5, h6, p, a, span, li {
 
 .hamburger-btn:hover {
   background-color: var(--primary-soft);
+}
+
+.hamburger-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 /* ==========================================================================
@@ -1745,6 +1759,7 @@ h1, h2, h3, h4, h5, h6, p, a, span, li {
   -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
+  touch-action: pan-y;
 }
 
 .mobile-drawer.open {
@@ -1766,6 +1781,7 @@ h1, h2, h3, h4, h5, h6, p, a, span, li {
   visibility: hidden;
   pointer-events: none;
   transition: opacity 0.3s ease, visibility 0.3s ease;
+  touch-action: none;
 }
 
 .drawer-backdrop.active {
@@ -1800,6 +1816,17 @@ h1, h2, h3, h4, h5, h6, p, a, span, li {
   flex-shrink: 0;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.close-drawer-btn * {
+  pointer-events: none !important;
+}
+
+.close-drawer-btn:hover {
+  background-color: var(--primary-soft);
+  color: var(--primary);
 }
 
 .drawer-content {

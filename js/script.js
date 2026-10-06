@@ -64,6 +64,10 @@
     const mobileDrawer = document.getElementById('mobileDrawer');
     const drawerBackdrop = document.getElementById('drawerBackdrop');
 
+    function isDrawerOpen() {
+      return !!(mobileDrawer && mobileDrawer.classList.contains('open'));
+    }
+
     function openDrawer() {
       if (!mobileDrawer) return;
       mobileDrawer.classList.add('open');
@@ -71,6 +75,7 @@
       hamburgerBtn?.setAttribute('aria-expanded', 'true');
       document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
     }
 
     function closeDrawer() {
@@ -80,29 +85,92 @@
       hamburgerBtn?.setAttribute('aria-expanded', 'false');
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
+      document.body.style.touchAction = '';
     }
 
-    // Toggle drawer open on hamburger click/tap
-    hamburgerBtn?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      openDrawer();
-    });
+    function toggleDrawer(e) {
+      if (e) {
+        if (e.cancelable) e.preventDefault();
+        e.stopPropagation();
+      }
+      if (isDrawerOpen()) {
+        closeDrawer();
+      } else {
+        openDrawer();
+      }
+    }
 
-    // Close drawer on X button
-    closeDrawerBtn?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      closeDrawer();
-    });
+    // Debounced safe toggle for mobile touch and click (prevents rapid double-triggering)
+    let lastToggleTime = 0;
+    function safeToggleDrawer(e) {
+      const now = Date.now();
+      if (now - lastToggleTime < 300) {
+        if (e && e.cancelable) e.preventDefault();
+        return;
+      }
+      lastToggleTime = now;
+      toggleDrawer(e);
+    }
 
-    // Close drawer when tapping backdrop
-    drawerBackdrop?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      closeDrawer();
+    // Direct element event bindings
+    if (hamburgerBtn) {
+      hamburgerBtn.addEventListener('click', safeToggleDrawer);
+      hamburgerBtn.addEventListener('pointerup', (e) => {
+        if (e.pointerType === 'touch') {
+          safeToggleDrawer(e);
+        }
+      });
+    }
+
+    if (closeDrawerBtn) {
+      closeDrawerBtn.addEventListener('click', (e) => {
+        if (e.cancelable) e.preventDefault();
+        e.stopPropagation();
+        closeDrawer();
+      });
+    }
+
+    if (drawerBackdrop) {
+      drawerBackdrop.addEventListener('click', (e) => {
+        if (e.cancelable) e.preventDefault();
+        e.stopPropagation();
+        closeDrawer();
+      });
+      drawerBackdrop.addEventListener('touchstart', () => {
+        closeDrawer();
+      }, { passive: true });
+    }
+
+    // Global document-level event delegation (foolproof safety net across all pages)
+    document.addEventListener('click', (e) => {
+      const targetHamburger = e.target.closest('#hamburgerBtn, .hamburger-btn');
+      if (targetHamburger) {
+        if (e.cancelable) e.preventDefault();
+        e.stopPropagation();
+        safeToggleDrawer(e);
+        return;
+      }
+
+      const targetClose = e.target.closest('#closeDrawerBtn, .close-drawer-btn');
+      if (targetClose) {
+        if (e.cancelable) e.preventDefault();
+        e.stopPropagation();
+        closeDrawer();
+        return;
+      }
+
+      const targetBackdrop = e.target.closest('#drawerBackdrop, .drawer-backdrop');
+      if (targetBackdrop) {
+        if (e.cancelable) e.preventDefault();
+        e.stopPropagation();
+        closeDrawer();
+        return;
+      }
     });
 
     // Close drawer on Escape key
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && mobileDrawer?.classList.contains('open')) {
+      if (e.key === 'Escape' && isDrawerOpen()) {
         closeDrawer();
       }
     });
