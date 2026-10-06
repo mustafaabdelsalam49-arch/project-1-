@@ -199,25 +199,16 @@
       switchDesktopMode(tabBrandTrigger, panelByBrand);
     });
 
-    // 4b. Standalone Coldair Dropdown Controller (Desktop & Touch)
-    const coldairNavWrapper = document.getElementById('coldairNavWrapper');
-    const coldairTriggerBtn = document.getElementById('coldairTriggerBtn');
-    const coldairDropdownPanel = document.getElementById('coldairDropdownPanel');
-
-    if (coldairNavWrapper && coldairDropdownPanel && coldairTriggerBtn) {
-      coldairTriggerBtn.addEventListener('click', (e) => {
-        if (window.innerWidth >= 992) {
-          e.preventDefault();
-          const isOpened = coldairDropdownPanel.classList.toggle('open');
-          coldairTriggerBtn.setAttribute('aria-expanded', String(isOpened));
+    // 4b. Standalone Coldair Direct Navigation on Click
+    const coldairNavPill = document.querySelector('.coldair-nav-pill');
+    if (coldairNavPill) {
+      coldairNavPill.addEventListener('click', (e) => {
+        // If clicking call or WhatsApp buttons, let them trigger their own direct actions
+        if (e.target.closest('.coldair-pill-actions')) {
+          return;
         }
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!coldairNavWrapper.contains(e.target)) {
-          coldairDropdownPanel.classList.remove('open');
-          coldairTriggerBtn.setAttribute('aria-expanded', 'false');
-        }
+        // Direct navigation to Coldair service page
+        window.location.href = 'service-coldair.html';
       });
     }
 
