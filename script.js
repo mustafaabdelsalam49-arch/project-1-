@@ -1,5 +1,5 @@
 /* ==========================================================================
-   مدير الصيانة - ملف التفاعلات (Main JavaScript)
+   مدير التوكيل - ملف التفاعلات (Main JavaScript)
    ========================================================================== */
 
 (function () {
@@ -11,9 +11,52 @@
   }
   window.__APP_SCRIPT_INITIALIZED__ = true;
 
+  // Automatically sync active state for navigation links across all pages
+  function syncActiveNavLinks() {
+    const rawPath = window.location.pathname.split('/').pop() || 'index.html';
+    const currentFile = rawPath.split('#')[0] || 'index.html';
+
+    // Desktop nav items
+    document.querySelectorAll('.desktop-nav > .nav-item').forEach((item) => {
+      const href = item.getAttribute('href');
+      if (href) {
+        const itemFile = href.split('/').pop().split('#')[0];
+        item.classList.toggle('active', itemFile === currentFile);
+      }
+    });
+
+    // Special category highlights for Services vs Coldair
+    const megaWrapper = document.getElementById('megaMenuWrapper');
+    const coldairWrapper = document.getElementById('coldairNavWrapper');
+
+    if (currentFile === 'service-coldair.html') {
+      coldairWrapper?.classList.add('active');
+      megaWrapper?.classList.remove('active');
+    } else if (
+      currentFile === 'services.html' ||
+      currentFile.startsWith('service-') ||
+      currentFile.startsWith('brand-')
+    ) {
+      megaWrapper?.classList.add('active');
+      coldairWrapper?.classList.remove('active');
+    }
+
+    // Mobile drawer links
+    document.querySelectorAll('.drawer-content .drawer-link').forEach((link) => {
+      const href = link.getAttribute('href');
+      if (href) {
+        const linkFile = href.split('/').pop().split('#')[0];
+        link.classList.toggle('active', linkFile === currentFile);
+      }
+    });
+  }
+
   function initApp() {
     if (window.__APP_INIT_DONE__) return;
     window.__APP_INIT_DONE__ = true;
+
+    // Apply active navigation state
+    syncActiveNavLinks();
 
     // Mobile Drawer Elements
     const hamburgerBtn = document.getElementById('hamburgerBtn');
@@ -64,7 +107,7 @@
       }
     });
 
-    // 2. Mobile Accordion for "الخدمات" in Drawer
+    // 2. Mobile Accordion for "الخدمات" in Drawer (Legacy & Dual)
     const drawerServicesToggle = document.getElementById('drawerServicesToggle');
     const drawerServicesPanel = document.getElementById('drawerServicesPanel');
 
@@ -124,11 +167,7 @@
           return;
         }
 
-        // For standard multi-page navigation (e.g. about.html, services.html):
-        // We do NOT call closeDrawer() synchronously here.
-        // Doing so removes .open and immediately applies visibility:hidden / pointer-events:none
-        // to the drawer, which causes mobile WebKit/Chrome to abort the synthesized click.
-        // Allowing natural navigation ensures 100% reliable page transitions.
+        // Standard multi-page navigation allowed naturally
       });
     });
 
@@ -298,9 +337,35 @@
     });
   }
 
+  // Support Web Component <site-navbar> & placeholder dynamic injection
+  function checkDynamicNavbar(callback) {
+    const placeholder = document.querySelector('site-navbar, #navbar-placeholder, [data-navbar-placeholder]');
+    if (placeholder && placeholder.innerHTML.trim() === '') {
+      fetch('navbar.html')
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.text();
+        })
+        .then((html) => {
+          placeholder.innerHTML = html;
+          callback();
+        })
+        .catch((err) => {
+          console.warn('Dynamic navbar fetch skipped (running locally or network error):', err);
+          callback();
+        });
+    } else {
+      callback();
+    }
+  }
+
+  if (typeof customElements !== 'undefined' && !customElements.get('site-navbar')) {
+    customElements.define('site-navbar', class extends HTMLElement {});
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initApp);
+    document.addEventListener('DOMContentLoaded', () => checkDynamicNavbar(initApp));
   } else {
-    initApp();
+    checkDynamicNavbar(initApp);
   }
 })();
