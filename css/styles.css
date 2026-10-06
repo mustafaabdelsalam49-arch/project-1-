@@ -672,6 +672,50 @@ h1, h2, h3, h4, h5, h6, p, a, span, li {
   color: #ffffff;
 }
 
+.category-direct-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  margin-right: auto;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.category-direct-link:hover {
+  background: var(--primary);
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+.appliance-nav-btn.active .category-direct-link {
+  background: rgba(200, 16, 46, 0.3);
+  color: #fca5a5;
+}
+
+.appliance-nav-btn.active .category-direct-link:hover {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.subpanel-title-link {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+}
+
+.subpanel-title-link:hover .subpanel-title {
+  color: #38bdf8;
+  text-decoration: underline;
+}
+
 /* Detail Column: Sub-Brands Grid */
 .mega-brand-subpanel-wrap {
   min-height: 280px;

@@ -225,8 +225,18 @@
 
     applianceNavButtons.forEach((btn) => {
       const targetId = btn.getAttribute('data-target');
+      const href = btn.getAttribute('data-href');
       btn.addEventListener('mouseenter', () => activateSubpanel(targetId, btn));
       btn.addEventListener('click', (e) => {
+        // If clicking the direct arrow link, allow native navigation
+        if (e.target.closest('.category-direct-link')) {
+          return;
+        }
+        // If button is already active and user clicks it, navigate to dedicated category page
+        if (btn.classList.contains('active') && href) {
+          window.location.href = href;
+          return;
+        }
         e.preventDefault();
         activateSubpanel(targetId, btn);
       });
