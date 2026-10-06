@@ -1,126 +1,284 @@
 /* ==========================================================================
-   التوكيل للصيانة - ملف التفاعلات (Main JavaScript)
+   مدير الصيانة - ملف التفاعلات (Main JavaScript)
    ========================================================================== */
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Mobile Drawer Elements
-  const hamburgerBtn = document.getElementById('hamburgerBtn');
-  const closeDrawerBtn = document.getElementById('closeDrawerBtn');
-  const mobileDrawer = document.getElementById('mobileDrawer');
-  const drawerBackdrop = document.getElementById('drawerBackdrop');
+(function () {
+  'use strict';
 
-  function openDrawer() {
-    mobileDrawer?.classList.add('open');
-    drawerBackdrop?.classList.add('active');
-    hamburgerBtn?.setAttribute('aria-expanded', 'true');
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.overflow = 'hidden';
+  // 1. Idempotent initialization guard to prevent duplicate event listener bindings
+  if (window.__APP_SCRIPT_INITIALIZED__) {
+    return;
   }
+  window.__APP_SCRIPT_INITIALIZED__ = true;
 
-  function closeDrawer() {
-    mobileDrawer?.classList.remove('open');
-    drawerBackdrop?.classList.remove('active');
-    hamburgerBtn?.setAttribute('aria-expanded', 'false');
-    document.documentElement.style.overflow = '';
-    document.body.style.overflow = '';
-  }
+  function initApp() {
+    if (window.__APP_INIT_DONE__) return;
+    window.__APP_INIT_DONE__ = true;
 
-  hamburgerBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    openDrawer();
-  });
+    // Mobile Drawer Elements
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    const drawerBackdrop = document.getElementById('drawerBackdrop');
 
-  closeDrawerBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    closeDrawer();
-  });
-
-  drawerBackdrop?.addEventListener('click', closeDrawer);
-
-  // Close on Escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && mobileDrawer?.classList.contains('open')) {
-      closeDrawer();
+    function openDrawer() {
+      if (!mobileDrawer) return;
+      mobileDrawer.classList.add('open');
+      drawerBackdrop?.classList.add('active');
+      hamburgerBtn?.setAttribute('aria-expanded', 'true');
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
     }
-  });
 
-  // Mobile Accordion for Services in Drawer
-  const drawerServicesToggle = document.getElementById('drawerServicesToggle');
-  const drawerServicesPanel = document.getElementById('drawerServicesPanel');
-
-  drawerServicesToggle?.addEventListener('click', () => {
-    const isOpen = drawerServicesPanel?.classList.toggle('open');
-    drawerServicesToggle.setAttribute('aria-expanded', String(isOpen));
-    const chevron = drawerServicesToggle.querySelector('.chevron');
-    if (chevron) {
-      chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+    function closeDrawer() {
+      if (!mobileDrawer) return;
+      mobileDrawer.classList.remove('open');
+      drawerBackdrop?.classList.remove('active');
+      hamburgerBtn?.setAttribute('aria-expanded', 'false');
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
     }
-  });
 
-  // Close drawer on internal link click
-  document.querySelectorAll('.drawer-link, .drawer-sublink').forEach(link => {
-    link.addEventListener('click', () => {
+    // Toggle drawer open on hamburger click/tap
+    hamburgerBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openDrawer();
+    });
+
+    // Close drawer on X button
+    closeDrawerBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
       closeDrawer();
     });
-  });
 
-  // FAQ Accordion
-  document.querySelectorAll('.faq-question').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const item = btn.closest('.faq-item');
-      if (!item) return;
-      const isOpen = item.classList.contains('open');
-      
-      // Close other open FAQs in same section
-      const parent = item.parentElement;
-      if (parent) {
-        parent.querySelectorAll('.faq-item.open').forEach(other => {
+    // Close drawer when tapping backdrop
+    drawerBackdrop?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeDrawer();
+    });
+
+    // Close drawer on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && mobileDrawer?.classList.contains('open')) {
+        closeDrawer();
+      }
+    });
+
+    // 2. Mobile Accordion for "الخدمات" in Drawer
+    const drawerServicesToggle = document.getElementById('drawerServicesToggle');
+    const drawerServicesPanel = document.getElementById('drawerServicesPanel');
+
+    if (drawerServicesToggle && drawerServicesPanel) {
+      drawerServicesToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const isOpen = drawerServicesPanel.classList.toggle('open');
+        drawerServicesToggle.setAttribute('aria-expanded', String(isOpen));
+
+        const chevron = drawerServicesToggle.querySelector('.chevron');
+        if (chevron) {
+          chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+      });
+    }
+
+    // 3. Robust link navigation handling inside mobile drawer
+    document.querySelectorAll('.drawer-link, .drawer-sublink').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href');
+        if (!href) return;
+
+        // Skip tel:, mailto:, external protocols, and new-tab links
+        if (
+          href.startsWith('tel:') ||
+          href.startsWith('mailto:') ||
+          href.startsWith('http') ||
+          link.getAttribute('target') === '_blank'
+        ) {
+          return;
+        }
+
+        // Handle pure in-page hash links (e.g. #booking)
+        if (href.startsWith('#')) {
+          e.preventDefault();
+          closeDrawer();
+          const target = document.querySelector(href);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+          return;
+        }
+
+        // Handle same-page hash links (e.g. index.html#booking when on index.html)
+        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+        const [linkPage, linkHash] = href.split('#');
+
+        if (linkHash && (linkPage === '' || linkPage === currentPath)) {
+          e.preventDefault();
+          closeDrawer();
+          const target = document.getElementById(linkHash);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+          return;
+        }
+
+        // For standard multi-page navigation (e.g. about.html, services.html):
+        // We do NOT call closeDrawer() synchronously here.
+        // Doing so removes .open and immediately applies visibility:hidden / pointer-events:none
+        // to the drawer, which causes mobile WebKit/Chrome to abort the synthesized click.
+        // Allowing natural navigation ensures 100% reliable page transitions.
+      });
+    });
+
+    // 4. Dual-Path Mega Menu Controller (Desktop & Mobile)
+    const tabApplianceTrigger = document.getElementById('tabApplianceTrigger');
+    const tabBrandTrigger = document.getElementById('tabBrandTrigger');
+    const panelByAppliance = document.getElementById('panelByAppliance');
+    const panelByBrand = document.getElementById('panelByBrand');
+
+    function switchDesktopMode(activeBtn, targetPanel) {
+      [tabApplianceTrigger, tabBrandTrigger].forEach((btn) => {
+        if (!btn) return;
+        btn.classList.toggle('active', btn === activeBtn);
+        btn.setAttribute('aria-selected', String(btn === activeBtn));
+      });
+      [panelByAppliance, panelByBrand].forEach((panel) => {
+        if (!panel) return;
+        panel.classList.toggle('active', panel === targetPanel);
+      });
+    }
+
+    tabApplianceTrigger?.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchDesktopMode(tabApplianceTrigger, panelByAppliance);
+    });
+
+    tabBrandTrigger?.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchDesktopMode(tabBrandTrigger, panelByBrand);
+    });
+
+    // Master-Detail Category Switcher (Hover & Click)
+    const applianceNavButtons = document.querySelectorAll('.appliance-nav-btn');
+    const subpanels = document.querySelectorAll('.mega-subpanel');
+
+    function activateSubpanel(targetId, activeBtn) {
+      applianceNavButtons.forEach((btn) => btn.classList.toggle('active', btn === activeBtn));
+      subpanels.forEach((panel) => {
+        panel.classList.toggle('active', panel.id === targetId);
+      });
+    }
+
+    applianceNavButtons.forEach((btn) => {
+      const targetId = btn.getAttribute('data-target');
+      btn.addEventListener('mouseenter', () => activateSubpanel(targetId, btn));
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        activateSubpanel(targetId, btn);
+      });
+    });
+
+    // Mobile Segmented Tab Controller
+    const mobTabApplianceBtn = document.getElementById('mobTabApplianceBtn');
+    const mobTabBrandBtn = document.getElementById('mobTabBrandBtn');
+    const mobPanelAppliance = document.getElementById('mobPanelAppliance');
+    const mobPanelBrand = document.getElementById('mobPanelBrand');
+
+    function switchMobileSegment(activeBtn, targetPanel) {
+      [mobTabApplianceBtn, mobTabBrandBtn].forEach((btn) => {
+        btn?.classList.toggle('active', btn === activeBtn);
+      });
+      [mobPanelAppliance, mobPanelBrand].forEach((panel) => {
+        panel?.classList.toggle('active', panel === targetPanel);
+      });
+    }
+
+    mobTabApplianceBtn?.addEventListener('click', () => {
+      switchMobileSegment(mobTabApplianceBtn, mobPanelAppliance);
+    });
+
+    mobTabBrandBtn?.addEventListener('click', () => {
+      switchMobileSegment(mobTabBrandBtn, mobPanelBrand);
+    });
+
+    // Mobile Sub-Accordion Toggle
+    document.querySelectorAll('.mob-accordion-header').forEach((header) => {
+      header.addEventListener('click', (e) => {
+        e.preventDefault();
+        const body = header.nextElementSibling;
+        const isOpen = body?.classList.toggle('open');
+        header.setAttribute('aria-expanded', String(isOpen));
+
+        const chevron = header.querySelector('.chevron');
+        if (chevron) {
+          chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+      });
+    });
+
+    // FAQ Accordion
+    document.querySelectorAll('.faq-question').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.faq-item');
+        if (!item) return;
+        const isOpen = item.classList.contains('open');
+
+        // Close other open FAQs in same section
+        const parent = item.parentElement;
+        parent?.querySelectorAll('.faq-item.open').forEach((other) => {
           if (other !== item) other.classList.remove('open');
         });
-      }
-      
-      item.classList.toggle('open', !isOpen);
-    });
-  });
 
-  // Booking & Contact Forms Handling (Real validation without fake backend)
-  const bookingForms = document.querySelectorAll('form[id*="booking"], form[id*="contact"]');
-  bookingForms.forEach(form => {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      const nameInput = form.querySelector('input[name="name"], input[id*="name"]');
-      const phoneInput = form.querySelector('input[name="phone"], input[id*="phone"]');
-      
-      if (nameInput && !nameInput.value.trim()) {
-        alert('يرجى إدخال الاسم الكريم.');
-        nameInput.focus();
-        return;
-      }
-      
-      if (phoneInput && !phoneInput.value.trim()) {
-        alert('يرجى إدخال رقم الهاتف للتواصل.');
-        phoneInput.focus();
-        return;
-      }
-
-      // Check if feedback container exists
-      let feedback = form.querySelector('.form-feedback');
-      if (!feedback) {
-        feedback = document.createElement('div');
-        feedback.className = 'form-feedback success';
-        form.appendChild(feedback);
-      }
-      
-      feedback.innerHTML = `
-        <strong>تم استلام بيانات طلبك بنجاح!</strong><br>
-        سيتواصل معك ممثل خدمة العملاء في أقرب وقت لتأكيد الموعد والعطل.<br>
-        للحصول على خدمة فورية الآن، يمكنك الاتصال مباشرة على: 
-        <a href="tel:01276042120" style="color:#c8102e;font-weight:bold;">01276042120</a> أو مراسلتنا عبر 
-        <a href="https://wa.me/201276042120" target="_blank" rel="noopener" style="color:#25d366;font-weight:bold;">واتساب</a>.
-      `;
-      feedback.style.display = 'block';
-      form.reset();
+        item.classList.toggle('open', !isOpen);
+      });
     });
-  });
-});
+
+    // Booking & Contact Forms Handling
+    const bookingForms = document.querySelectorAll('form[id*="booking"], form[id*="contact"]');
+    bookingForms.forEach((form) => {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const nameInput = form.querySelector('input[name="name"], input[id*="name"]');
+        const phoneInput = form.querySelector('input[name="phone"], input[id*="phone"]');
+
+        if (nameInput && !nameInput.value.trim()) {
+          alert('يرجى إدخال الاسم الكريم.');
+          nameInput.focus();
+          return;
+        }
+
+        if (phoneInput && !phoneInput.value.trim()) {
+          alert('يرجى إدخال رقم الهاتف للتواصل.');
+          phoneInput.focus();
+          return;
+        }
+
+        let feedback = form.querySelector('.form-feedback');
+        if (!feedback) {
+          feedback = document.createElement('div');
+          feedback.className = 'form-feedback success';
+          form.appendChild(feedback);
+        }
+
+        feedback.innerHTML = `
+          <strong>تم استلام بيانات طلبك بنجاح!</strong><br>
+          سيتواصل معك ممثل خدمة العملاء في أقرب وقت لتأكيد الموعد والعطل.<br>
+          للحصول على خدمة فورية الآن، يمكنك الاتصال مباشرة على: 
+          <a href="tel:+201271524415" style="color:#c8102e;font-weight:bold;">01271524415</a> أو مراسلتنا عبر 
+          <a href="https://wa.me/201271524415" target="_blank" rel="noopener" style="color:#25d366;font-weight:bold;">واتساب</a>.
+        `;
+        feedback.style.display = 'block';
+        form.reset();
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+  } else {
+    initApp();
+  }
+})();

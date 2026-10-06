@@ -1,5 +1,5 @@
 /* ==========================================================================
-   التوكيل للصيانة - التصميم الموحد الاحترافي (Mobile First & Zero-Overflow)
+   مدير الصيانة - التصميم الموحد الاحترافي (Mobile First & Zero-Overflow)
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap');
@@ -272,6 +272,7 @@ h1, h2, h3, h4, h5, h6, p, a, span, li {
   align-items: center;
   justify-content: space-between;
   height: 74px;
+  position: relative;
 }
 
 .brand {
@@ -380,23 +381,40 @@ h1, h2, h3, h4, h5, h6, p, a, span, li {
 }
 
 /* MEGA MENU PANEL (Desktop Only) */
+.nav-item.has-mega {
+  position: static; /* Allows .mega-menu to anchor to .nav-wrap container instead of the narrow trigger item */
+}
+
 .mega-menu {
   position: absolute;
-  top: 100%;
+  top: calc(100% - 2px);
   right: 0;
-  width: min(1060px, 94vw);
+  left: 0;
+  width: 100%;
+  max-width: 100%;
   background-color: var(--navy-dark);
   color: #ffffff;
   border-radius: var(--radius-md);
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: var(--shadow-mega);
-  padding: 24px;
+  padding: 24px 28px;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translateY(12px);
-  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+  transform: translateY(10px);
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s ease;
   z-index: 1050;
+}
+
+/* Invisible hover bridge to prevent premature mouseleave during movement */
+.mega-menu::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  right: 0;
+  left: 0;
+  height: 14px;
+  background: transparent;
 }
 
 .has-mega:hover .mega-menu,
@@ -507,6 +525,653 @@ h1, h2, h3, h4, h5, h6, p, a, span, li {
   color: #e2e8f0;
   line-height: 1.6;
   margin-bottom: 10px;
+}
+
+/* ==========================================================================
+   DUAL-PATH MEGA MENU ARCHITECTURE (Desktop & Mobile)
+   ========================================================================== */
+
+/* 1. Header Tabs: Appliance Category vs Brand Hub */
+.mega-header-tabs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mega-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.mega-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.mega-tab-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(200, 16, 46, 0.35);
+}
+
+/* Panel Display State */
+.mega-tab-panel {
+  display: none;
+  animation: megaPanelFade 0.22s ease forwards;
+}
+
+.mega-tab-panel.active {
+  display: block;
+}
+
+@keyframes megaPanelFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 2. Path A: Master-Detail Layout */
+.mega-dual-layout {
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  gap: 22px;
+}
+
+/* Master Column (RTL Appliance List) */
+.mega-appliance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  padding-left: 14px;
+}
+
+.appliance-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: #cbd5e1;
+  cursor: pointer;
+  text-align: right;
+  font-family: inherit;
+  transition: var(--transition);
+  width: 100%;
+}
+
+.appliance-nav-btn .appliance-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.appliance-nav-btn .appliance-meta {
+  flex-grow: 1;
+}
+
+.appliance-nav-btn .appliance-meta strong {
+  display: block;
+  font-size: 13.5px;
+  color: #ffffff;
+}
+
+.appliance-nav-btn .appliance-meta small {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 1px;
+}
+
+.appliance-nav-btn .badge-count {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  color: #cbd5e1;
+  flex-shrink: 0;
+}
+
+.appliance-nav-btn:hover,
+.appliance-nav-btn.active {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.appliance-nav-btn.active {
+  background: rgba(200, 16, 46, 0.18);
+  border-color: rgba(200, 16, 46, 0.4);
+}
+
+.appliance-nav-btn.active .appliance-meta strong {
+  color: #fca5a5;
+}
+
+.appliance-nav-btn.active .badge-count {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+/* Detail Column: Sub-Brands Grid */
+.mega-brand-subpanel-wrap {
+  min-height: 280px;
+}
+
+.mega-subpanel {
+  display: none;
+}
+
+.mega-subpanel.active {
+  display: block;
+  animation: megaPanelFade 0.2s ease forwards;
+}
+
+.subpanel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+}
+
+.subpanel-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.subpanel-all-link {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #f87171;
+  transition: var(--transition);
+}
+
+.subpanel-all-link:hover {
+  color: #fca5a5;
+  text-decoration: underline;
+}
+
+.subpanel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.subpanel-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  color: #e2e8f0;
+  font-size: 13px;
+  font-weight: 700;
+  transition: var(--transition);
+}
+
+.brand-chip {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 7px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xs);
+  color: #ffffff;
+}
+
+.subpanel-item:hover {
+  background: rgba(200, 16, 46, 0.15);
+  border-color: rgba(200, 16, 46, 0.35);
+  color: #ffffff;
+  transform: translateX(-3px);
+}
+
+/* 3. Path B: Brands Grid Cards */
+.mega-brands-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.brand-hub-card {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: var(--transition);
+}
+
+.brand-hub-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--primary);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(4, 16, 33, 0.5);
+}
+
+.brand-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.brand-origin-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  background: rgba(200, 16, 46, 0.2);
+  color: #fca5a5;
+  border-radius: var(--radius-full);
+}
+
+.brand-desc {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.brand-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.brand-tags span {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  color: #cbd5e1;
+}
+
+.brand-link-cta {
+  font-size: 12px;
+  font-weight: 800;
+  color: #f87171;
+  margin-top: auto;
+  padding-top: 6px;
+}
+
+/* ==========================================================================
+   4. MOBILE DRAWER DUAL-PATH STYLES
+   ========================================================================== */
+.mobile-dual-nav-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin: 6px 0;
+  background: #ffffff;
+}
+
+.mobile-nav-segment {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--bg-alt);
+  padding: 4px;
+  border-bottom: 1px solid var(--border);
+  gap: 4px;
+}
+
+.segment-btn {
+  padding: 8px 10px;
+  border-radius: var(--radius-xs);
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.segment-btn.active {
+  background: #ffffff;
+  color: var(--primary);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.mobile-panel-section {
+  display: none;
+}
+
+.mobile-panel-section.active {
+  display: block;
+}
+
+/* Mobile Accordions */
+.mob-accordion-item {
+  border-bottom: 1px solid var(--border-light);
+}
+
+.mob-accordion-item:last-child {
+  border-bottom: none;
+}
+
+.mob-accordion-header {
+  width: 100%;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: none;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--navy);
+  cursor: pointer;
+  text-align: right;
+  touch-action: manipulation;
+}
+
+.mob-accordion-body {
+  display: none;
+  background: var(--bg-alt);
+  padding: 6px 12px;
+}
+
+.mob-accordion-body.open {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.mob-sub-link {
+  padding: 8px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+  border-radius: var(--radius-xs);
+  display: block;
+}
+
+.mob-sub-link.highlight {
+  font-weight: 800;
+  color: var(--primary);
+  background: rgba(200, 16, 46, 0.08);
+}
+
+/* Mobile Brand List */
+.mob-brands-list {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 6px;
+}
+
+.mob-brand-card-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  transition: var(--transition);
+}
+
+.chip-sm {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 6px;
+  background: var(--navy-dark);
+  color: #ffffff;
+  border-radius: 4px;
+}
+
+.mob-brand-info {
+  flex-grow: 1;
+}
+
+.mob-brand-info strong {
+  display: block;
+  font-size: 13px;
+  color: var(--navy);
+}
+
+.mob-brand-info small {
+  display: block;
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+
+.arrow-sym {
+  color: var(--primary);
+  font-weight: bold;
+}
+
+/* ==========================================================================
+   5. BRAND HUB LANDING PAGE STYLES
+   ========================================================================== */
+.brand-hero-section {
+  background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+  color: #ffffff;
+  padding: 40px 0 60px;
+  border-bottom: 3px solid var(--primary);
+}
+
+.breadcrumb-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 24px;
+}
+
+.breadcrumb-nav a {
+  color: #cbd5e1;
+}
+
+.breadcrumb-nav a:hover {
+  color: #ffffff;
+}
+
+.breadcrumb-nav .current {
+  color: #fca5a5;
+  font-weight: 700;
+}
+
+.brand-hero-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.brand-hero-text h1 {
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1.3;
+  margin: 14px 0 16px;
+  color: #ffffff;
+}
+
+.brand-hero-text h1 span {
+  color: #f87171;
+  display: block;
+}
+
+.brand-hero-text p {
+  font-size: 16px;
+  color: #cbd5e1;
+  line-height: 1.7;
+}
+
+.brand-trust-points {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.trust-item span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.brand-badge-box {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  text-align: center;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+}
+
+.brand-logo-placeholder {
+  display: inline-block;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: #ffffff;
+  padding: 8px 24px;
+  background: rgba(200, 16, 46, 0.3);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+}
+
+.badge-features {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+/* Appliance Hub Grid */
+.appliance-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.appliance-hub-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.appliance-hub-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
+}
+
+.hub-card-icon {
+  font-size: 32px;
+}
+
+.appliance-hub-card h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--navy);
+}
+
+.appliance-hub-card p {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.hub-faults-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0 12px;
+  padding: 10px 12px;
+  background: var(--bg-alt);
+  border-radius: var(--radius-xs);
+}
+
+.hub-faults-list li {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hub-faults-list li::before {
+  content: '•';
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.appliance-hub-card .btn {
+  margin-top: auto;
+}
+
+@media (max-width: 991px) {
+  .brand-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .appliance-hub-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
 
 /* Nav Actions & Mobile Toggle */
@@ -667,20 +1332,49 @@ h1, h2, h3, h4, h5, h6, p, a, span, li {
   color: var(--navy);
   cursor: pointer;
   text-align: right;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.drawer-accordion-btn .chevron {
+  display: inline-block;
+  font-size: 11px;
+  transition: transform 0.25s ease;
+  pointer-events: none;
 }
 
 .drawer-accordion-panel {
   display: none;
   background: #ffffff;
   padding: 8px 10px;
-  max-height: 400px;
-  overflow-y: auto;
+  overflow: visible;
 }
 
 .drawer-accordion-panel.open {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  animation: drawerAccordionFadeIn 0.2s ease forwards;
+}
+
+@keyframes drawerAccordionFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.drawer-link,
+.drawer-sublink,
+.close-drawer-btn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
 }
 
 .drawer-sublink {
@@ -1441,7 +2135,26 @@ textarea.form-control {
    RESPONSIVE DESIGN (Media Queries for 100% Mobile & Tablet Precision)
    ========================================================================== */
 
-/* Tablets & Small Laptops */
+/* Medium Desktops & Compact Screens (992px - 1180px) */
+@media (min-width: 992px) and (max-width: 1180px) {
+  .mega-menu {
+    padding: 20px 16px;
+  }
+  .mega-inner {
+    grid-template-columns: 1.25fr 1fr 1fr 1.05fr;
+    gap: 12px;
+  }
+  .mega-col {
+    padding: 6px 8px;
+  }
+  .mega-links a {
+    font-size: 12.5px;
+    gap: 6px;
+    padding: 5px 6px;
+  }
+}
+
+/* Tablets & Mobile (Below 992px) */
 @media (max-width: 991px) {
   .desktop-nav, .nav-cta {
     display: none !important;
