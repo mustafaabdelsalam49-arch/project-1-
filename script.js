@@ -399,8 +399,8 @@
           <strong>تم استلام بيانات طلبك بنجاح!</strong><br>
           سيتواصل معك ممثل خدمة العملاء في أقرب وقت لتأكيد الموعد والعطل.<br>
           للحصول على خدمة فورية الآن، يمكنك الاتصال مباشرة على: 
-          <a href="tel:+201271524415" style="color:#c8102e;font-weight:bold;">01271524415</a> أو مراسلتنا عبر 
-          <a href="https://wa.me/201271524415" target="_blank" rel="noopener" style="color:#25d366;font-weight:bold;">واتساب</a>.
+          <a href="tel:+2010XXXXXXXX" style="color:#c8102e;font-weight:bold;">010-XXXX-XXXX</a> أو مراسلتنا عبر 
+          <a href="https://wa.me/2010XXXXXXXX" target="_blank" rel="noopener" style="color:#25d366;font-weight:bold;">واتساب</a>.
         `;
         feedback.style.display = 'block';
         form.reset();

@@ -96,8 +96,8 @@ htmlFiles.forEach(file => {
       '<div class="nav-item has-coldair-dropdown active" id="coldairNavWrapper">'
     );
     customizedNavbar = customizedNavbar.replace(
-      'href="https://wa.me/201271524415" target="_blank" rel="noopener" class="sticky-bar-wa-btn"',
-      'href="https://wa.me/201278844434" target="_blank" rel="noopener" class="sticky-bar-wa-btn"'
+      'href="https://wa.me/2010XXXXXXXX" target="_blank" rel="noopener" class="sticky-bar-wa-btn"',
+      'href="https://wa.me/2010XXXXXXXX" target="_blank" rel="noopener" class="sticky-bar-wa-btn"'
     );
   } else if (file.startsWith('service-') || file === 'services.html' || file.startsWith('brand-') || file === 'heaters.html' || file === 'cooling.html' || file === 'cooking.html' || file === 'dishwashers.html' || file === 'dryers.html') {
     customizedNavbar = customizedNavbar.replace(
@@ -125,7 +125,7 @@ htmlFiles.forEach(file => {
   content = content.replace(/<b>\s*مدير\s*<\/b>\s*التوكيل/g, '<b>مدير</b> الصيانة');
 
   // Also ensure phone placeholder in brand-fresh.html
-  content = content.replace('01012345678', '01271524415');
+  content = content.replace('01012345678', '010-XXXX-XXXX');
 
   // 5. Save file with clean UTF-8
   fs.writeFileSync(filePath, content, { encoding: 'utf8' });
